@@ -43,8 +43,6 @@ var bird = {
         
         this.oStart.classList.remove('start-'+prevColor);
         this.oStart.classList.add('start-'+this.startColor);
-        
-
     }
 
 };
