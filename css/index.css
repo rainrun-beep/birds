@@ -41,7 +41,10 @@
 }
 
 .score {
-    text-align: center;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+
     font-size: 20px;
     font-weight: bolder;
     color: #fff;
@@ -130,6 +133,19 @@
     margin: 0 auto;
 }
 
-.abc {
-    background-color: #fff;
+.column {
+    position: absolute;
+    width: 52px;
+}
+
+.column-top {
+    background-image: url(../imgs/pipe2.png);
+    background-position-y: bottom;
+    top: 0;
+}
+
+.column-down {
+    background-image: url(../imgs/pipe1.png);
+    background-position-y: top;
+    bottom: 0;
 }
