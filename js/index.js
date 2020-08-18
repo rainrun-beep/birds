@@ -24,26 +24,43 @@ var bird = {
     skyStep: 2,
     birdTop: 235,
     startColor: 'blue',
+    startFlag: false,
+    birdStepY: 0,
+    minTop: 0,
+    maxTop: 570,
+    columnCount: 7,
+    columnArr: [],
+    leftArr: [],
 
     init: function() {
         this.initData();
         this.animate();
+        this.handleStart();
+        this.handleClick();
     },
 
     initData: function () {
         this.el = document.getElementById('game');
         this.oBird = this.el.getElementsByClassName('bird')[0];
         this.oStart = this.el.getElementsByClassName('start')[0];
+        this.oScore = this.el.getElementsByClassName('score')[0];
     },
 
     animate: function () {
         var count = 0;
-        setInterval(() => {
+        this.timer = setInterval(() => {
             this.skyMove();
+            if (this.startFlag) {
+                this.birdDrop();
+                this.moveColumn();
+            }
+
             if (++count % 10 === 0) {
-                this.birdMove();
+                if (!this.startFlag) {
+                    this.startBound();
+                    this.birdMove();
+                }
                 this.birdFly(count);
-                this.startBound();
             }
         }, 30);
     },
@@ -60,14 +77,110 @@ var bird = {
 
     birdFly: function (count) {
         this.oBird.style.backgroundPositionX = (count % 3) * -30 + 'px';
+    },
+    
+    birdDrop: function() {       
+        this.birdTop += ++ this.birdStepY;
+        this.oBird.style.top = this.birdTop + 'px';
+
+        this.hitCheck();
+    },
+
+    createColumn: function(x) {
+        // 0-1 0-100 有可能为0  50-(175+50)
+        // 上下柱子之间的距离 150  上面的柱子最好的高度是（600-150）/ 2 = 255
+        var topHeight = Math.floor(Math.random() * 175) + 50;
+        var downHeight = 450-topHeight;
+        var otopColumn = this.createElement('div', ['column', 'column-top'], {height:topHeight+'px', left:x+'px'});
+        var odownColumn = this.createElement('div', ['column', 'column-down'], {height:downHeight+'px', left:x+'px'});
+        this.columnArr.push({
+            top: otopColumn,
+            down: odownColumn 
+        });
+
+        this.leftArr.push({
+            left: x
+        })
+        this.el.appendChild(otopColumn);
+        this.el.appendChild(odownColumn);
+    },
+
+    moveColumn: function () {
+        for (var i = 0; i < this.columnCount; i++) {
+            var oUpColumn = this.columnArr[i].top;
+            var oDownColumn = this.columnArr[i].down;
+            // var left = this.leftArr[i].left - this.skyStep;
+            var left = parseInt(oUpColumn.style.left) - this.skyStep;
+            oUpColumn.style.left = left + 'px';
+            oDownColumn.style.left = left + 'px';
+        }
+    },
+
+    createElement: function (eleName, classArr, styleObj) {
+        var dom = document.createElement(eleName);
+        for (var i = 0; i < classArr.length; i++) {
+            dom.classList.add(classArr[i]);
+        }
+
+        for (item in styleObj) {
+            dom.style[item] = styleObj[item];
+        }
+        return dom;
+    },
+
+    hitCheck: function() {
+        this.hitBorder();  
+        this.hitColumn();
     }, 
+
+    hitBorder: function() {
+        if (this.birdTop <= this.minTop || this.birdTop >= this.maxTop) {
+            this.failGame();
+        }
+    },
+
+    hitColumn: function() {
+
+    },
 
     startBound: function () {
         var prevColor = this.startColor;
         this.startColor = this.startColor === 'blue' ? 'white' : 'blue';
         this.oStart.classList.remove('start-'+prevColor);
         this.oStart.classList.add('start-'+this.startColor);
-    }
+    },
 
+    handleStart: function() {
+        this.oStart.onclick =  () => {
+            this.oScore.style.display = 'block';
+            this.oStart.style.display = 'none';
+            this.oBird.style.left = '80px';
+            this.oBird.style.transition = 'none';
+            this.skyStep = 5;
+            this.startFlag = true;
+            for (var i = 0; i < this.columnCount; i++) {
+                this.createColumn(300 * (i + 1));
+            }
+        }
+    },
+
+    /**
+     * 这个如果不加e判断来源的元素,会造成时间冒泡, 当点击oStart的时候, 也会触发start
+     * 的父类, sky元素, 设置了this.birdStepY = -10 向上去了
+     */
+    handleClick: function() {
+        this.el.onclick = (e) => {
+            var event = e || window.event;
+            var dom = event.target;
+            //查询目标元素是否包含了这个class
+            if (!dom.classList.contains('start')) {
+                this.birdStepY = -10;
+            }
+        }
+    },
+
+    failGame: function() {
+        clearInterval(this.timer);
+    }
 };
 bird.init();
