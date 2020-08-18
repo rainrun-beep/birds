@@ -5,6 +5,19 @@
  * 小鸟移动的效果, 只是将它的位置变到了固定的范围, 比如220-260,然后使用transition:top .3s linear,
  * 这样就可以看着像是在上下移动, 小鸟扇动翅膀的效果是, 因为小鸟的图片是雪碧图, 通过挪动backgroundPositionX,来实现切换图片, 从而实现小鸟的翅膀移动, 同样设置300ms执行一次,因为挪动设置了transition, 而小鸟的翅膀会立即执行, 所以没移动到位置的时候, 翅膀就会动
  * 小鸟扇动翅膀的效果, 0, -30, -60 这样的话可以1%3=1 2%3=3 3%3=0 4%3=1这样就会变成(n%3)*-30 
+ * 
+ * foo.call(obj);  就是foo中的this,指向了obj; 
+ * 如果想要调用别的对象中的参数, 可以将 别的对象.call(this);
+ * 例:
+ *    function test () {
+ *        this.echo : function () {console.log(this)}
+ *    }
+ *     
+ *    function test2() {
+ *        test.call(test2);
+ *        this.echo();
+ *    }
+ * 顾名思义就是想要用别的对象的方法, 方法绑定在别的对象中, 所以foo.call(this)就可以了
  */
 var bird = {
     skyPosition: 0,
