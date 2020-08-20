@@ -28,6 +28,7 @@
     line-height: 60px;
     font-weight: bolder;
     transition: all .3s linear;
+    cursor: pointer;
 }
 
 .start.start-white{

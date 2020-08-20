@@ -255,6 +255,12 @@ var bird = {
             if (!dom.classList.contains('start')) {
                 this.birdStepY = -10;
             }
+
+            if (!dom.classList.contains('restart')) {
+                if (sessionStorage.getItem('play')) {
+                    sessionStorage.removeItem('play');
+                }
+            }
         }
     },
 
